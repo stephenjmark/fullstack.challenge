@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import { computed, action, observable } from "mobx";
 import { observer, inject } from "mobx-react";
+import _ from "underscore";
 
 import type Account from "src/models/Account";
 
@@ -26,8 +27,13 @@ type tProps = {
 @inject("account")
 @observer
 class Agenda extends Component<tProps> {
-  //Create observable selected Calendar
+  /** Track selected calendar
+   */
   @observable selectedCal = "ALL";
+
+  /** Track department toggle
+   */
+  @observable groupByDepartment = "ON";
 
   /**
    * Return events from SELECTED calendar or ALL calendars, sorted by date-time.
@@ -50,12 +56,57 @@ class Agenda extends Component<tProps> {
   }
 
   /**
-   * Update selectedCal
+   * Update the selected calendar
    */
   @action
   handleCalSelect = e => {
     let id = e.target.value;
     this.selectedCal = id;
+  };
+
+  /**
+   * Toggle department groups
+   */
+  @action
+  toggleGroups = () => {
+    this.groupByDepartment === "ON"
+      ? (this.groupByDepartment = "OFF")
+      : (this.groupByDepartment = "ON");
+  };
+
+  /**
+   * Conditionally render groups unsorted or grouped by department
+   */
+  @action
+  renderEventList = () => {
+    if (this.groupByDepartment === "ON") {
+      let departments = _.groupBy(this.events, ({ event }) =>
+        event.department === undefined ? "none" : event.department
+      );
+      let lists = [];
+
+      for (let group in departments) {
+        lists.push(
+          <div className={style.groupContainer}>
+            <h3 className={style.groupTitle}>{group}</h3>
+            <List>
+              {departments[group].map(({ calendar, event }) => (
+                <EventCell key={event.id} calendar={calendar} event={event} />
+              ))}
+            </List>{" "}
+          </div>
+        );
+      }
+      return lists;
+    } else if (this.groupByDepartment === "OFF") {
+      return (
+        <List>
+          {this.events.map(({ calendar, event }) => (
+            <EventCell key={event.id} calendar={calendar} event={event} />
+          ))}
+        </List>
+      );
+    }
   };
 
   render() {
@@ -66,17 +117,23 @@ class Agenda extends Component<tProps> {
             <span className={style.title}>
               <Greeting />
             </span>
-            <Select
-              handleCalSelect={this.handleCalSelect}
-              account={this.props.account}
-            />
+            <div className={style.settings}>
+              <Select
+                handleCalSelect={this.handleCalSelect}
+                account={this.props.account}
+              />
+              <label>
+                Group by Department:
+                <input
+                  type="radio"
+                  value="later"
+                  checked={this.groupByDepartment === "ON"}
+                  onClick={this.toggleGroups}
+                />
+              </label>
+            </div>
           </div>
-
-          <List>
-            {this.events.map(({ calendar, event }) => (
-              <EventCell key={event.id} calendar={calendar} event={event} />
-            ))}
-          </List>
+          {this.renderEventList()}
         </div>
       </div>
     );

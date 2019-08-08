@@ -23,6 +23,22 @@
   margin: 0 auto;
 }
 
+.groupContainer {
+  width: 90%;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  background: white;
+  border: 1px solid rgba($grayColor, 0.3);
+  box-sizing: border-box;
+  border-radius: 12px;
+  padding-bottom: 16px;
+  margin: 5px auto;
+}
+
+.groupTitle {
+  @include title-text;
+}
+
 .header {
   display: flex;
   flex-direction: row;
@@ -33,4 +49,8 @@
 .header {
   @include title-text;
   color: $blackColor;
+}
+
+.settings {
+  @include body-medium-text;
 }
