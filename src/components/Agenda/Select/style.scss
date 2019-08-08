@@ -5,7 +5,6 @@
 }
 
 .select {
-  @include body-medium-text;
   outline: none;
   border: 0px;
   position: relative;
@@ -15,7 +14,6 @@
 }
 
 .option {
-  @include body-medium-text;
   outline: none;
   border: 0px;
   background: $lightGrayColor;

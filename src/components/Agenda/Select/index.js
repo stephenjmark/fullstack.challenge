@@ -17,20 +17,23 @@ export default observer(({ account, handleCalSelect }: tProps) => {
   return (
     <div className={style.container}>
       <form>
-        <select onChange={handleCalSelect} className={style.select}>
-          <option value={"ALL"} key={"ALL"} className={style.option}>
-            All
-          </option>
-          {account.calendars.map(calendar => (
-            <option
-              value={calendar.id}
-              key={calendar.id}
-              className={style.option}
-            >
-              {calendar.id.slice(0, 12)}
+        <label>
+          Calendar:
+          <select onChange={handleCalSelect} className={style.select}>
+            <option value={"ALL"} key={"ALL"} className={style.option}>
+              All
             </option>
-          ))}
-        </select>
+            {account.calendars.map(calendar => (
+              <option
+                value={calendar.id}
+                key={calendar.id}
+                className={style.option}
+              >
+                {calendar.id.slice(0, 12)}
+              </option>
+            ))}
+          </select>
+        </label>
       </form>
     </div>
   );

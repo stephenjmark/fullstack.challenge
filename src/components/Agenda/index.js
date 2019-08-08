@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from "react";
-import { computed, action, observable } from "mobx";
+import { computed, action, observable, toJS } from "mobx";
 import { observer, inject } from "mobx-react";
 import _ from "underscore";
 
@@ -35,6 +35,10 @@ class Agenda extends Component<tProps> {
    */
   @observable groupByDepartment = "ON";
 
+  /** Track department toggle
+   */
+  @observable reload = true;
+
   /**
    * Return events from SELECTED calendar or ALL calendars, sorted by date-time.
    * Returned objects contain both Event and corresponding Calendar
@@ -62,6 +66,7 @@ class Agenda extends Component<tProps> {
   handleCalSelect = e => {
     let id = e.target.value;
     this.selectedCal = id;
+    this.reload = !this.reload;
   };
 
   /**
@@ -81,19 +86,20 @@ class Agenda extends Component<tProps> {
   renderEventList = () => {
     if (this.groupByDepartment === "ON") {
       let departments = _.groupBy(this.events, ({ event }) =>
-        event.department === undefined ? "none" : event.department
+        event.department === undefined ? "Misc." : event.department
       );
       let lists = [];
 
       for (let group in departments) {
         lists.push(
           <div className={style.groupContainer}>
-            <h3 className={style.groupTitle}>{group}</h3>
+            <span className={style.groupTitle}>{group}</span>
             <List>
               {departments[group].map(({ calendar, event }) => (
                 <EventCell key={event.id} calendar={calendar} event={event} />
               ))}
             </List>{" "}
+            <hr className={style.divider} />
           </div>
         );
       }
@@ -133,7 +139,7 @@ class Agenda extends Component<tProps> {
               </label>
             </div>
           </div>
-          {this.renderEventList()}
+          {this.reload ? this.renderEventList() : this.renderEventList()}
         </div>
       </div>
     );
