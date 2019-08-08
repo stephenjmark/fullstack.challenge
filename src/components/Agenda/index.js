@@ -1,13 +1,13 @@
 // @flow
 
 import React, { Component } from "react";
-import { computed } from "mobx";
+import { computed, action, observable } from "mobx";
 import { observer, inject } from "mobx-react";
-
-import Greeting from "lib/greeting";
 
 import type Account from "src/models/Account";
 
+import Greeting from "./Greeting";
+import Select from "./Select";
 import List from "./List";
 import EventCell from "./EventCell";
 
@@ -26,13 +26,20 @@ type tProps = {
 @inject("account")
 @observer
 class Agenda extends Component<tProps> {
+  //Create observable selected Calendar
+  @observable selectedCal = "ALL";
+
   /**
-   * Return events from all calendars, sorted by date-time.
+   * Return events from SELECTED calendar or ALL calendars, sorted by date-time.
    * Returned objects contain both Event and corresponding Calendar
    */
   @computed
   get events(): Array<{ calendar: Calendar, event: Event }> {
     const events = this.props.account.calendars
+      .filter(
+        calendar =>
+          this.selectedCal === "ALL" || calendar.id === this.selectedCal
+      )
       .map(calendar => calendar.events.map(event => ({ calendar, event })))
       .flat();
 
@@ -42,6 +49,15 @@ class Agenda extends Component<tProps> {
     return events;
   }
 
+  /**
+   * Update selectedCal
+   */
+  @action
+  handleCalSelect = e => {
+    let id = e.target.value;
+    this.selectedCal = id;
+  };
+
   render() {
     return (
       <div className={style.outer}>
@@ -50,6 +66,10 @@ class Agenda extends Component<tProps> {
             <span className={style.title}>
               <Greeting />
             </span>
+            <Select
+              handleCalSelect={this.handleCalSelect}
+              account={this.props.account}
+            />
           </div>
 
           <List>

@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 // @flow
 
 /**
- * Greeting string depending on the time of day.
+ * Greeting Component - auto-update based on local time of day.
  */
 
 const Greeting = () => {
@@ -13,7 +13,6 @@ const Greeting = () => {
   useEffect(() => {
     const id = setInterval(() => {
       setHour(DateTime.local().hour);
-      console.log("hi");
     }, 1000);
     return () => clearInterval(id);
   }, []);
