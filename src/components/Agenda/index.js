@@ -33,7 +33,7 @@ class Agenda extends Component<tProps> {
 
   /** Track department toggle
    */
-  @observable groupByDepartment = "ON";
+  @observable groupByDepartment = "OFF";
 
   /** Track department toggle
    */
@@ -84,10 +84,12 @@ class Agenda extends Component<tProps> {
    */
   @action
   renderEventList = () => {
+    //Render events in groups
     if (this.groupByDepartment === "ON") {
       let departments = _.groupBy(this.events, ({ event }) =>
         event.department === undefined ? "Misc." : event.department
       );
+
       let lists = [];
 
       for (let group in departments) {
@@ -104,6 +106,8 @@ class Agenda extends Component<tProps> {
         );
       }
       return lists;
+
+      //Render events NOT in groups
     } else if (this.groupByDepartment === "OFF") {
       return (
         <List>
